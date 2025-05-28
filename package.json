@@ -13,12 +13,17 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "datejs": "^1.0.0-rc3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.10.0"
+    "mongoose": "^8.15.0",
+    "morgan": "^1.10.0",
+    "node-cache": "^5.1.2"
   },
   "devDependencies": {
+    "@types/datejs": "^0.0.36",
     "@types/express": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.15.19",
     "dotenv": "^16.5.0",
