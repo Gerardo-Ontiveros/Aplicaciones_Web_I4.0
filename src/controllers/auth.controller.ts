@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { generateAccessToken } from "../utils/generateToken";
 import { cache } from "../utils/cache";
 import { User } from "../models/auth/User";
+import { encryptionPassword } from "../utils/encryptionPassword";
 //import dayjs from "datejs";
 
 export const login = (req: Request, res: Response) => {
@@ -75,12 +76,14 @@ export const saveUser = async (req: Request, res: Response) => {
   try {
     const { name, username, email, phone, password, rol } = req.body;
 
+    const newPassword = await encryptionPassword(password); //Mandamos a llamar la funcion para encriptar la contraseña y lo guardamos en una variable
+
     const newUser = new User({
       name,
       username,
       email,
       phone,
-      password,
+      password: newPassword,
       rol,
       status: true,
     });
@@ -106,6 +109,7 @@ export const updateUser = async (req: Request, res: Response) => {
     }
 
     const userEmail = await User.find({ email });
+    const newPassword = await encryptionPassword(password); //Mandamos a llamar la funcion para encriptar la contraseña y lo guardamos en una variable
 
     if (userEmail && userEmail.length > 0) {
       return res.status(426).json({ message: "El email debe ser unico" });
@@ -113,13 +117,14 @@ export const updateUser = async (req: Request, res: Response) => {
 
     user.name = name;
     user.email = email;
-    user.password != null ? password : user.password;
+    user.password = password != null ? newPassword : user.password; //Estabamos evaluando directamente el registro en lugar de lo que mandabamos al body
     user.rol = rol;
     user.phone = phone;
 
     const updateUser = await user.save();
-
-    return res.json({ updateUser });
+    const passwordNoReturn = updateUser.toObject();
+    delete passwordNoReturn.password; //Eliminamos el dato password del return para mas seguridad
+    return res.json({ passwordNoReturn });
   } catch (e) {
     console.log(e);
   }
