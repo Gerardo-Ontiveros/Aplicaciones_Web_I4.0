@@ -2,21 +2,29 @@ import { Request, Response } from "express";
 import { generateAccessToken } from "../utils/generateToken";
 import { cache } from "../utils/cache";
 import { User } from "../models/auth/User";
-import { encryptionPassword } from "../utils/encryptionPassword";
+import {
+  encryptionPassword,
+  verifyPassword,
+} from "../utils/encryptionPassword";
 //import dayjs from "datejs";
 
-export const login = (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response) => {
   /* Dentro del body del request buscar las variables de username y password*/
   const { username, password } = req.body;
 
-  if (username !== "admin" || password !== "12345") {
-    return res.status(401).json({ message: "Credenciales incorrectas" });
+  const user = await User.findOne({ username });
+
+  const validPassword = await verifyPassword(password, user.password);
+
+  if (!validPassword || !user) {
+    return res
+      .status(404)
+      .json({ message: "El usuario o contraseña son incorrectos" });
   }
 
-  const userID = "123456789";
-  const accessToken = generateAccessToken(userID);
+  const accessToken = generateAccessToken(user._id.toString());
 
-  cache.set(userID, accessToken, 60 * 15);
+  cache.set(user._id.toString(), accessToken, 60 * 15);
   return res.json({
     message: "Login exitoso",
     accessToken,
