@@ -92,3 +92,35 @@ export const saveUser = async (req: Request, res: Response) => {
     console.log(e);
   }
 };
+
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const { email, phone, password, rol, name } = req.body;
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "No existe este usuario" });
+    }
+
+    const userEmail = await User.find({ email });
+
+    if (userEmail && userEmail.length > 0) {
+      return res.status(426).json({ message: "El email debe ser unico" });
+    }
+
+    user.name = name;
+    user.email = email;
+    user.password != null ? password : user.password;
+    user.rol = rol;
+    user.phone = phone;
+
+    const updateUser = await user.save();
+
+    return res.json({ updateUser });
+  } catch (e) {
+    console.log(e);
+  }
+};

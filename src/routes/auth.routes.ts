@@ -4,6 +4,7 @@ import {
   getUserByUsername,
   login,
   saveUser,
+  updateUser,
 } from "../controllers/auth.controller";
 import { getTimeToken } from "../controllers/auth.controller";
 import { updateToken } from "../controllers/auth.controller";
@@ -21,5 +22,6 @@ router.patch("/update/:userId", updateToken);
 router.get("/users", getAllUsers);
 router.post("/users/add", saveUser);
 router.get("/users/name/:userName", getUserByUsername);
+router.patch("/users/update/:id", updateUser);
 
 export default router;
