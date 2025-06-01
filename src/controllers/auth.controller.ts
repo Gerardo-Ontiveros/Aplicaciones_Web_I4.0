@@ -137,3 +137,19 @@ export const updateUser = async (req: Request, res: Response) => {
     console.log(e);
   }
 };
+
+export const deleteUser = async (req: Request, res: Response) => {
+  const { userID } = req.params;
+  const user = await User.findById(userID);
+
+  if (!user) {
+    return res.status(404).json({ message: "Usuario no encontrado" });
+  }
+
+  user.status = false;
+  user.deleteDate = new Date();
+
+  await user.save();
+
+  res.json({ message: "Eliminacion exitosa" });
+};
